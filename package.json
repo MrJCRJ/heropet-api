@@ -1,0 +1,29 @@
+{
+  "name": "heropet-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nest start",
+    "dev": "nest start --watch",
+    "build": "nest build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@nestjs/axios": "^4.0.0",
+    "@nestjs/common": "^11.0.20",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/core": "^11.0.20",
+    "@nestjs/mongoose": "^11.0.3",
+    "@nestjs/platform-express": "^11.0.20",
+    "axios": "^1.8.4",
+    "mongoose": "^8.13.2"
+  },
+  "devDependencies": {
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^22.14.1",
+    "typescript": "^5.8.3"
+  }
+}
