@@ -34,9 +34,9 @@ export class Fornecedor extends Document {
       cidade: { type: String, required: false },
       estado: { type: String, required: false },
     },
-    required: true,
+    required: false,
   })
-  endereco!: {
+  endereco?: {
     cep?: string;
     numero?: string;
     complemento?: string;

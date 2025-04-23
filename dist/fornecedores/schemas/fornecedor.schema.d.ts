@@ -5,7 +5,7 @@ export declare class Fornecedor extends Document {
     nomeFantasia?: string;
     email?: string;
     telefone?: string;
-    endereco: {
+    endereco?: {
         cep?: string;
         numero?: string;
         complemento?: string;

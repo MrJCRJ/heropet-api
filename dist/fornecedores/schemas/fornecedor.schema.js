@@ -51,7 +51,7 @@ __decorate([
             cidade: { type: String, required: false },
             estado: { type: String, required: false },
         },
-        required: true,
+        required: false,
     }),
     __metadata("design:type", Object)
 ], Fornecedor.prototype, "endereco", void 0);

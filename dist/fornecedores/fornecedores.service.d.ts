@@ -8,7 +8,7 @@ export declare class FornecedoresService {
     criar(fornecedorDto: CreateFornecedorDto): Promise<Fornecedor>;
     buscarTodos(): Promise<Fornecedor[]>;
     buscarPorCnpj(cnpj: string): Promise<Fornecedor | null>;
-    atualizar(cnpj: string, fornecedorDto: CreateFornecedorDto): Promise<Fornecedor | null>;
+    atualizar(cnpj: string, fornecedorDto: Partial<CreateFornecedorDto>): Promise<Fornecedor | null>;
     remover(cnpj: string): Promise<{
         deletedCount: number;
     }>;

@@ -31,11 +31,11 @@ export class FornecedoresService {
 
   async atualizar(
     cnpj: string,
-    fornecedorDto: CreateFornecedorDto
+    fornecedorDto: Partial<CreateFornecedorDto>
   ): Promise<Fornecedor | null> {
     this.logger.log(`Atualizando fornecedor com CNPJ: ${cnpj}`);
     return this.fornecedorModel
-      .findOneAndUpdate({ cnpj }, fornecedorDto, { new: true })
+      .findOneAndUpdate({ cnpj }, { $set: fornecedorDto }, { new: true })
       .exec();
   }
 

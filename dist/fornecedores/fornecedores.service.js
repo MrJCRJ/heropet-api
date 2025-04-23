@@ -39,7 +39,7 @@ let FornecedoresService = FornecedoresService_1 = class FornecedoresService {
     async atualizar(cnpj, fornecedorDto) {
         this.logger.log(`Atualizando fornecedor com CNPJ: ${cnpj}`);
         return this.fornecedorModel
-            .findOneAndUpdate({ cnpj }, fornecedorDto, { new: true })
+            .findOneAndUpdate({ cnpj }, { $set: fornecedorDto }, { new: true })
             .exec();
     }
     async remover(cnpj) {

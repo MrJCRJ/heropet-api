@@ -40,11 +40,11 @@ export class FornecedoresController {
   @Put(":cnpj")
   async atualizar(
     @Param("cnpj") cnpj: string,
-    @Body() createFornecedorDto: CreateFornecedorDto
+    @Body() updateFornecedorDto: Partial<CreateFornecedorDto>
   ): Promise<Fornecedor> {
     const fornecedor = await this.fornecedoresService.atualizar(
       cnpj,
-      createFornecedorDto
+      updateFornecedorDto
     );
     if (!fornecedor) {
       throw new NotFoundException(`Fornecedor com CNPJ ${cnpj} não encontrado`);

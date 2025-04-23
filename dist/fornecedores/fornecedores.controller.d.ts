@@ -7,6 +7,6 @@ export declare class FornecedoresController {
     criar(createFornecedorDto: CreateFornecedorDto): Promise<Fornecedor>;
     buscarTodos(): Promise<Fornecedor[]>;
     buscarPorCnpj(cnpj: string): Promise<Fornecedor>;
-    atualizar(cnpj: string, createFornecedorDto: CreateFornecedorDto): Promise<Fornecedor>;
+    atualizar(cnpj: string, updateFornecedorDto: Partial<CreateFornecedorDto>): Promise<Fornecedor>;
     remover(cnpj: string): Promise<void>;
 }

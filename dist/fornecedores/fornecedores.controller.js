@@ -33,8 +33,8 @@ let FornecedoresController = class FornecedoresController {
         }
         return fornecedor;
     }
-    async atualizar(cnpj, createFornecedorDto) {
-        const fornecedor = await this.fornecedoresService.atualizar(cnpj, createFornecedorDto);
+    async atualizar(cnpj, updateFornecedorDto) {
+        const fornecedor = await this.fornecedoresService.atualizar(cnpj, updateFornecedorDto);
         if (!fornecedor) {
             throw new common_1.NotFoundException(`Fornecedor com CNPJ ${cnpj} não encontrado`);
         }
@@ -73,7 +73,7 @@ __decorate([
     __param(0, (0, common_1.Param)("cnpj")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, create_fornecedor_dto_1.CreateFornecedorDto]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], FornecedoresController.prototype, "atualizar", null);
 __decorate([
