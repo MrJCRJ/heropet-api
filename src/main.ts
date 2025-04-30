@@ -1,3 +1,4 @@
+// File: src/main.ts
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
@@ -5,19 +6,20 @@ import { ValidationPipe } from "@nestjs/common";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Habilite CORS para todas as rotas
   app.enableCors({
     origin: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
   });
 
-  // Adicione validação global
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
+      transform: true, // Habilita transformação automática
+      transformOptions: {
+        enableImplicitConversion: true, // Permite conversão implícita
+      },
+      whitelist: true, // Remove propriedades não decoradas
+      forbidNonWhitelisted: false, // Não rejeita requisições com propriedades extras
     })
   );
 

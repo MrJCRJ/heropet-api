@@ -5,6 +5,7 @@ import { HttpModule } from "@nestjs/axios";
 import { FornecedoresModule } from "./fornecedores/fornecedores.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { PedidosModule } from "./pedidos/pedidos.module";
+import { ClientesModule } from "./clientes/clientes.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PedidosModule } from "./pedidos/pedidos.module";
     HttpModule,
     FornecedoresModule,
     PedidosModule,
+    ClientesModule,
   ],
 })
 export class AppModule {}
