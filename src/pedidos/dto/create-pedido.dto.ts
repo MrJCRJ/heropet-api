@@ -63,11 +63,11 @@ export class CreatePedidoDto {
 
   @IsNotEmpty()
   @IsDateString()
-  dataPedido!: Date;
+  dataPedido!: string;
 
   @IsOptional()
   @IsDateString()
-  dataEntrega?: Date;
+  dataEntrega?: string;
 
   @IsArray()
   @ValidateNested({ each: true })
