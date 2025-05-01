@@ -9,7 +9,7 @@ export enum TipoPedido {
 export enum StatusPedido {
   PENDENTE = "PENDENTE",
   PROCESSANDO = "PROCESSANDO",
-  CONCLUIDO = "CONCLUIDO",
+  PAGO = "PAGO",
   CANCELADO = "CANCELADO",
 }
 
