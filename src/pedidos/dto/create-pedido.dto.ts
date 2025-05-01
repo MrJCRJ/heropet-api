@@ -22,6 +22,7 @@ export enum StatusPedido {
   PROCESSANDO = "PROCESSANDO",
   PAGO = "PAGO",
   CANCELADO = "CANCELADO",
+  ATRASADO = "ATRASADO",
 }
 
 class ItemPedidoDto {
