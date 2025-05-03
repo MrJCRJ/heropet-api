@@ -8,14 +8,15 @@ import {
   Delete,
   NotFoundException,
   Query,
+  Patch,
 } from "@nestjs/common";
 import { PedidosService } from "./pedidos.service";
 import { CreatePedidoDto } from "./dto/create-pedido.dto";
+import { CriarParcelamentoDto } from "./dto/create-pedido.dto";
 
 @Controller("pedidos")
 export class PedidosController {
   constructor(private readonly pedidosService: PedidosService) {}
-
   @Post()
   async criar(@Body() createPedidoDto: CreatePedidoDto) {
     return this.pedidosService.criar(createPedidoDto);
@@ -57,5 +58,38 @@ export class PedidosController {
       throw new NotFoundException(`Pedido com ID ${id} não encontrado`);
     }
     return { message: "Pedido removido com sucesso" };
+  }
+
+  @Post(":id/parcelar")
+  async parcelarPedido(
+    @Param("id") id: string,
+    @Body() criarParcelamentoDto: CriarParcelamentoDto
+  ) {
+    const pedido = await this.pedidosService.parcelarPedido(
+      id,
+      criarParcelamentoDto.quantidadeParcelas,
+      criarParcelamentoDto.semanal
+    );
+    if (!pedido) {
+      throw new NotFoundException(`Pedido com ID ${id} não encontrado`);
+    }
+    return pedido;
+  }
+
+  @Patch(":id/parcelas/:numeroParcela/pagar")
+  async marcarParcelaComoPaga(
+    @Param("id") id: string,
+    @Param("numeroParcela") numeroParcela: number
+  ) {
+    const pedido = await this.pedidosService.marcarParcelaComoPaga(
+      id,
+      numeroParcela
+    );
+    if (!pedido) {
+      throw new NotFoundException(
+        `Pedido com ID ${id} não encontrado ou parcela inválida`
+      );
+    }
+    return pedido;
   }
 }

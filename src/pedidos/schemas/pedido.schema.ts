@@ -53,6 +53,30 @@ export class Pedido extends Document {
   totalPedido!: number;
 
   @Prop({ type: Boolean, default: false })
+  parcelado?: boolean;
+
+  @Prop({ type: Number, min: 1, max: 4, required: false })
+  quantidadeParcelas?: number;
+
+  @Prop({ type: Boolean, required: false })
+  parcelamentoSemanal?: boolean;
+
+  @Prop([
+    {
+      numero: { type: Number, required: true },
+      dataVencimento: { type: Date, required: true },
+      valor: { type: Number, required: true },
+      pago: { type: Boolean, default: false },
+    },
+  ])
+  parcelas?: {
+    numero: number;
+    dataVencimento: Date;
+    valor: number;
+    pago: boolean;
+  }[];
+
+  @Prop({ type: Boolean, default: false })
   temNotaFiscal?: boolean;
 
   @Prop({ type: String, required: false })

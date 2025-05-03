@@ -124,4 +124,90 @@ export class PedidosService {
       historicoMensal: Object.values(historico[produtoId].historicoMensal),
     }));
   }
+  async parcelarPedido(
+    pedidoId: string,
+    quantidadeParcelas: number,
+    semanal: boolean
+  ): Promise<Pedido | null> {
+    const pedido = await this.pedidoModel.findById(pedidoId).exec();
+    if (!pedido) {
+      return null;
+    }
+
+    // Verificar se já foi parcelado
+    if (pedido.parcelado) {
+      throw new Error("Este pedido já foi parcelado");
+    }
+
+    // Calcular parcelas
+    const parcelas = this.calcularParcelas(
+      pedido.dataPedido,
+      pedido.totalPedido,
+      quantidadeParcelas,
+      semanal
+    );
+
+    // Atualizar pedido com as parcelas
+    return this.pedidoModel
+      .findByIdAndUpdate(
+        pedidoId,
+        {
+          parcelado: true,
+          quantidadeParcelas,
+          parcelamentoSemanal: semanal,
+          parcelas,
+        },
+        { new: true }
+      )
+      .exec();
+  }
+
+  private calcularParcelas(
+    dataPedido: Date,
+    totalPedido: number,
+    quantidadeParcelas: number,
+    semanal: boolean
+  ): { numero: number; dataVencimento: Date; valor: number; pago: boolean }[] {
+    const valorParcela = totalPedido / quantidadeParcelas;
+    const parcelas = [];
+
+    for (let i = 1; i <= quantidadeParcelas; i++) {
+      const dataVencimento = new Date(dataPedido);
+
+      if (semanal) {
+        // Parcelamento semanal: 7, 14, 21, 28 dias
+        dataVencimento.setDate(dataPedido.getDate() + i * 7);
+      } else {
+        // Parcelamento mensal (30 dias)
+        dataVencimento.setDate(dataPedido.getDate() + i * 30);
+      }
+
+      parcelas.push({
+        numero: i,
+        dataVencimento,
+        valor: valorParcela,
+        pago: false,
+      });
+    }
+
+    return parcelas;
+  }
+
+  async marcarParcelaComoPaga(
+    pedidoId: string,
+    numeroParcela: number
+  ): Promise<Pedido | null> {
+    return this.pedidoModel
+      .findOneAndUpdate(
+        {
+          _id: pedidoId,
+          "parcelas.numero": numeroParcela,
+        },
+        {
+          $set: { "parcelas.$.pago": true },
+        },
+        { new: true }
+      )
+      .exec();
+  }
 }

@@ -9,6 +9,9 @@ import {
   IsBoolean,
   IsOptional,
   IsDateString,
+  IsInt,
+  Min as MinValue,
+  Max as MaxValue,
 } from "class-validator";
 import { Type } from "class-transformer";
 
@@ -23,6 +26,18 @@ export enum StatusPedido {
   PAGO = "PAGO",
   CANCELADO = "CANCELADO",
   ATRASADO = "ATRASADO",
+}
+
+export class CriarParcelamentoDto {
+  @IsNotEmpty()
+  @IsInt()
+  @MinValue(1)
+  @MaxValue(4)
+  quantidadeParcelas!: number;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  semanal!: boolean;
 }
 
 class ItemPedidoDto {
