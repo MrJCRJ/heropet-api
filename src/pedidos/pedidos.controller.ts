@@ -23,11 +23,22 @@ export class PedidosController {
   }
 
   @Get()
-  async buscarTodos(@Query("tipo") tipo?: string) {
-    if (tipo) {
-      return this.pedidosService.buscarPorTipo(tipo);
-    }
-    return this.pedidosService.buscarTodos();
+  async buscarTodos(
+    @Query("tipo") tipo?: string,
+    @Query("status") status?: string,
+    @Query("ordenacao") ordenacao?: string
+  ) {
+    // Adicione logs para debug
+    console.log("Filtros recebidos:", { tipo, status, ordenacao });
+
+    const pedidos = await this.pedidosService.buscarComFiltros({
+      tipo,
+      status,
+      ordenacao,
+    });
+
+    console.log("Pedidos retornados:", pedidos.length);
+    return pedidos;
   }
 
   @Get(":id")

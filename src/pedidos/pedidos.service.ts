@@ -1,34 +1,9 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, BadRequestException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Pedido } from "./schemas/pedido.schema";
 import { CreatePedidoDto } from "./dto/create-pedido.dto";
-
-export interface HistoricoMensal {
-  mes: number;
-  ano: number;
-  compras: number;
-  vendas: number;
-  estoque: number;
-}
-
-export interface ProdutoHistoricoResponse {
-  produtoId: string;
-  nome: string;
-  estoqueAtual: number;
-  historicoMensal: HistoricoMensal[];
-}
-
-// Esta interface pode permanecer não exportada pois é usada apenas internamente
-interface ProdutoHistorico {
-  nome: string;
-  estoqueAtual: number;
-  historicoMensal: Record<string, HistoricoMensal>;
-}
-
-interface HistoricoEstoque {
-  [produtoId: string]: ProdutoHistorico;
-}
+import { HistoricoEstoque, ProdutoHistoricoResponse } from "./interface";
 
 @Injectable()
 export class PedidosService {
@@ -37,12 +12,42 @@ export class PedidosService {
   constructor(@InjectModel(Pedido.name) private pedidoModel: Model<Pedido>) {}
 
   async criar(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
-    const criado = new this.pedidoModel(createPedidoDto);
-    return criado.save();
+    try {
+      const criado = new this.pedidoModel(createPedidoDto);
+      return await criado.save();
+    } catch (error: any) {
+      this.logger.error(`Erro ao criar pedido: ${error.message}`);
+      throw new BadRequestException("Dados do pedido inválidos");
+    }
   }
 
   async buscarTodos(): Promise<Pedido[]> {
     return this.pedidoModel.find().exec();
+  }
+
+  async buscarComFiltros(filtros: {
+    tipo?: string;
+    status?: string;
+    ordenacao?: string;
+  }): Promise<Pedido[]> {
+    const query: any = {};
+
+    if (filtros.tipo && filtros.tipo !== "TODOS") {
+      query.tipo = filtros.tipo;
+    }
+
+    if (filtros.status) {
+      query.status = filtros.status;
+    }
+
+    let consulta = this.pedidoModel.find(query);
+
+    if (filtros.ordenacao) {
+      const sortOrder = filtros.ordenacao === "data_asc" ? 1 : -1;
+      consulta = consulta.sort({ dataPedido: sortOrder });
+    }
+
+    return consulta.exec();
   }
 
   async buscarPorId(id: string): Promise<Pedido | null> {
@@ -67,63 +72,67 @@ export class PedidosService {
   }
 
   async calcularHistoricoEstoque(): Promise<ProdutoHistoricoResponse[]> {
-    const pedidos = await this.pedidoModel
-      .find()
-      .sort({ dataPedido: 1 })
-      .exec();
-    const historico: HistoricoEstoque = {};
+    try {
+      const pedidos = await this.pedidoModel
+        .find()
+        .sort({ dataPedido: 1 })
+        .exec();
 
-    pedidos.forEach((pedido) => {
-      pedido.itens.forEach((item) => {
-        if (!historico[item.produto]) {
-          historico[item.produto] = {
-            nome: item.produto,
-            estoqueAtual: 0,
-            historicoMensal: {},
-          };
+      const historico: HistoricoEstoque = {};
+
+      for (const pedido of pedidos) {
+        for (const item of pedido.itens) {
+          if (!historico[item.produto]) {
+            historico[item.produto] = {
+              nome: item.produto,
+              estoqueAtual: 0,
+              historicoMensal: {},
+            };
+          }
+
+          const produto = historico[item.produto];
+          const data = new Date(pedido.dataPedido);
+          const mes = data.getMonth() + 1;
+          const ano = data.getFullYear();
+          const chaveMes = `${ano}-${mes}`;
+
+          if (!produto.historicoMensal[chaveMes]) {
+            produto.historicoMensal[chaveMes] = {
+              mes,
+              ano,
+              compras: 0,
+              vendas: 0,
+              estoque: 0,
+            };
+          }
+
+          const mesHistorico = produto.historicoMensal[chaveMes];
+
+          if (pedido.tipo === "COMPRA") {
+            mesHistorico.compras += item.quantidade;
+            produto.estoqueAtual += item.quantidade;
+          } else {
+            const novoEstoque = produto.estoqueAtual - item.quantidade;
+            produto.estoqueAtual = Math.max(0, novoEstoque);
+            mesHistorico.vendas += item.quantidade;
+          }
+
+          mesHistorico.estoque = produto.estoqueAtual;
         }
+      }
 
-        const produto = historico[item.produto];
-        const data = new Date(pedido.dataPedido);
-        const mes = data.getMonth() + 1;
-        const ano = data.getFullYear();
-        const chaveMes = `${ano}-${mes}`;
-
-        if (!produto.historicoMensal[chaveMes]) {
-          produto.historicoMensal[chaveMes] = {
-            mes,
-            ano,
-            compras: 0,
-            vendas: 0,
-            estoque: 0,
-          };
-        }
-
-        const mesHistorico = produto.historicoMensal[chaveMes];
-
-        if (pedido.tipo === "COMPRA") {
-          mesHistorico.compras += item.quantidade;
-          produto.estoqueAtual += item.quantidade;
-        } else {
-          mesHistorico.vendas += item.quantidade;
-          produto.estoqueAtual = Math.max(
-            0,
-            produto.estoqueAtual - item.quantidade
-          );
-        }
-
-        mesHistorico.estoque = produto.estoqueAtual;
-      });
-    });
-
-    // Converter para array de resposta
-    return Object.keys(historico).map((produtoId) => ({
-      produtoId,
-      nome: historico[produtoId].nome,
-      estoqueAtual: historico[produtoId].estoqueAtual,
-      historicoMensal: Object.values(historico[produtoId].historicoMensal),
-    }));
+      return Object.keys(historico).map((produtoId) => ({
+        produtoId,
+        nome: historico[produtoId].nome,
+        estoqueAtual: historico[produtoId].estoqueAtual,
+        historicoMensal: Object.values(historico[produtoId].historicoMensal),
+      }));
+    } catch (error: any) {
+      this.logger.error(`Erro ao calcular histórico: ${error.message}`);
+      throw new Error("Falha ao calcular histórico de estoque");
+    }
   }
+
   async parcelarPedido(
     pedidoId: string,
     quantidadeParcelas: number,
@@ -167,7 +176,12 @@ export class PedidosService {
     totalPedido: number,
     quantidadeParcelas: number,
     semanal: boolean
-  ): { numero: number; dataVencimento: Date; valor: number; pago: boolean }[] {
+  ): Array<{
+    numero: number;
+    dataVencimento: Date;
+    valor: number;
+    pago: boolean;
+  }> {
     const valorParcela = totalPedido / quantidadeParcelas;
     const parcelas = [];
 
