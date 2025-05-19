@@ -26,15 +26,18 @@ export class PedidosController {
   async buscarTodos(
     @Query("tipo") tipo?: string,
     @Query("status") status?: string,
-    @Query("ordenacao") ordenacao?: string
+    @Query("ordenacao") ordenacao?: string,
+    @Query("mes") mes?: number,
+    @Query("ano") ano?: number
   ) {
-    // Adicione logs para debug
-    console.log("Filtros recebidos:", { tipo, status, ordenacao });
+    console.log("Filtros recebidos:", { tipo, status, ordenacao, mes, ano });
 
     const pedidos = await this.pedidosService.buscarComFiltros({
       tipo,
       status,
       ordenacao,
+      mes: mes ? Number(mes) : undefined,
+      ano: ano ? Number(ano) : undefined,
     });
 
     console.log("Pedidos retornados:", pedidos.length);

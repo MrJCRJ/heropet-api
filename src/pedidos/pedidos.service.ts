@@ -29,6 +29,8 @@ export class PedidosService {
     tipo?: string;
     status?: string;
     ordenacao?: string;
+    mes?: number;
+    ano?: number;
   }): Promise<Pedido[]> {
     const query: any = {};
 
@@ -38,6 +40,23 @@ export class PedidosService {
 
     if (filtros.status) {
       query.status = filtros.status;
+    }
+
+    // Filtro por data (corrigido)
+    if (filtros.mes !== undefined || filtros.ano !== undefined) {
+      const year = filtros.ano || new Date().getFullYear();
+      const month =
+        (filtros.mes !== undefined ? filtros.mes : new Date().getMonth() + 1) -
+        1;
+
+      // Cria datas no início do dia em UTC
+      const startDate = new Date(Date.UTC(year, month, 1, 0, 0, 0));
+      const endDate = new Date(Date.UTC(year, month + 1, 1, 0, 0, 0));
+
+      query.dataPedido = {
+        $gte: startDate,
+        $lt: endDate,
+      };
     }
 
     let consulta = this.pedidoModel.find(query);
