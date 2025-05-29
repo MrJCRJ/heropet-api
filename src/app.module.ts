@@ -6,6 +6,8 @@ import { FornecedoresModule } from "./fornecedores/fornecedores.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { PedidosModule } from "./pedidos/pedidos.module";
 import { ClientesModule } from "./clientes/clientes.module";
+import { ExportDataModule } from './export-data/export-data.module';
+import { FinancasModule } from './financas/financas.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { ClientesModule } from "./clientes/clientes.module";
     FornecedoresModule,
     PedidosModule,
     ClientesModule,
+    ExportDataModule,
+    FinancasModule,
   ],
 })
 export class AppModule {}
