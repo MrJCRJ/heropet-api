@@ -16,22 +16,6 @@ export class UpdateClienteDto {
 
   @IsString()
   @IsOptional()
-  logradouro?: string;
-
-  @IsString()
-  @IsOptional()
-  bairro?: string;
-
-  @IsString()
-  @IsOptional()
-  localidade?: string;
-
-  @IsString()
-  @IsOptional()
-  uf?: string;
-
-  @IsString()
-  @IsOptional()
   numero?: string;
 
   @IsString()

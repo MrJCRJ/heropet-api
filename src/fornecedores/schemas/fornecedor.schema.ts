@@ -29,10 +29,6 @@ export class Fornecedor extends Document {
       cep: { type: String, required: false },
       numero: { type: String, required: false },
       complemento: { type: String, required: false },
-      logradouro: { type: String, required: false },
-      bairro: { type: String, required: false },
-      cidade: { type: String, required: false },
-      estado: { type: String, required: false },
     },
     required: false,
   })
@@ -40,10 +36,6 @@ export class Fornecedor extends Document {
     cep?: string;
     numero?: string;
     complemento?: string;
-    logradouro?: string;
-    bairro?: string;
-    cidade?: string;
-    estado?: string;
   };
 }
 

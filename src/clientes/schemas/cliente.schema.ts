@@ -20,18 +20,6 @@ export class Cliente {
   cep?: string;
 
   @Prop()
-  logradouro?: string;
-
-  @Prop()
-  bairro?: string;
-
-  @Prop()
-  localidade?: string;
-
-  @Prop()
-  uf?: string;
-
-  @Prop()
   numero?: string;
 
   @Prop()

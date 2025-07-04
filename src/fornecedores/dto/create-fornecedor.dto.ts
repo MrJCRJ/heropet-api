@@ -21,22 +21,6 @@ class EnderecoDto {
   @IsOptional()
   @IsString()
   complemento?: string;
-
-  @IsOptional()
-  @IsString()
-  logradouro?: string;
-
-  @IsOptional()
-  @IsString()
-  bairro?: string;
-
-  @IsOptional()
-  @IsString()
-  cidade?: string;
-
-  @IsOptional()
-  @IsString()
-  estado?: string;
 }
 
 export class CreateFornecedorDto {
